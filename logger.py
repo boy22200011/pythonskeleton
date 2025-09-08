@@ -6,3 +6,5 @@ def get_logger(name: str):
         format="%(asctime)s [%(levelname)s] %(name)s - %(message)s"
     )
     return logging.getLogger(name)
+
+__all__ = ["get_logger"]

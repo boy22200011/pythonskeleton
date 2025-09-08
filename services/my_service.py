@@ -11,3 +11,6 @@ class MyService:
         logger.info("服務啟動中...")
         result = do_something("Hello Service")
         logger.info(f"服務結果: {result}")
+
+
+__all__ = ["MyService"]

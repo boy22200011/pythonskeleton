@@ -7,3 +7,5 @@ class Config:
             self.db_conn = "mysql://user:pass@localhost:3306/testdb"
         else:  # prod
             self.db_conn = "mysql://user:pass@dbserver:3306/proddb"
+
+__all__ = ["Config"]
