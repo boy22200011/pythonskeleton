@@ -95,3 +95,38 @@ Python 安裝後就有，不需額外安裝。
 ---
 
 ✅ 建議：把 `.venv` 加入 `.gitignore`，避免把虛擬環境推上 Git。
+
+
+# 🐍 Python 裝飾器速查表
+
+| 裝飾器 | 用途 | 範例 |
+|--------|------|------|
+| `@property` | 把方法變成屬性 (getter) | ```python\nclass Person:\n    def __init__(self, name):\n        self._name = name\n\n    @property\n    def name(self):\n        return self._name\n``` |
+| `@<property>.setter` | 定義屬性的 setter | ```python\n    @name.setter\n    def name(self, value):\n        self._name = value\n``` |
+| `@<property>.deleter` | 定義屬性的 deleter | ```python\n    @name.deleter\n    def name(self):\n        del self._name\n``` |
+| `@classmethod` | 定義類別方法，第一參數是 `cls` | ```python\nclass Person:\n    @classmethod\n    def create_anonymous(cls):\n        return cls(\"無名氏\")\n``` |
+| `@staticmethod` | 定義靜態方法，與類別/實例無關 | ```python\nclass Math:\n    @staticmethod\n    def add(a, b):\n        return a + b\n``` |
+| `@dataclass` | 自動生成 `__init__`、`__repr__` 等 | ```python\nfrom dataclasses import dataclass\n@dataclass\nclass Point:\n    x: int\n    y: int\n``` |
+| `@abstractmethod` | 定義抽象方法，強制子類別實作 | ```python\nfrom abc import ABC, abstractmethod\nclass Shape(ABC):\n    @abstractmethod\n    def area(self):\n        pass\n``` |
+| `@functools.lru_cache` | 快取函式結果 (memoization) | ```python\nfrom functools import lru_cache\n@lru_cache(maxsize=None)\ndef fib(n):\n    return n if n < 2 else fib(n-1)+fib(n-2)\n``` |
+| `@functools.cache` | (Python 3.9+) 無上限快取 | ```python\nfrom functools import cache\n@cache\ndef fib(n):\n    return n if n < 2 else fib(n-1)+fib(n-2)\n``` |
+| `@functools.wraps` | 保留原函式資訊 (自訂裝飾器必備) | ```python\nfrom functools import wraps\ndef log(func):\n    @wraps(func)\n    def wrapper(*args, **kwargs):\n        print(\"呼叫\", func.__name__)\n        return func(*args, **kwargs)\n    return wrapper\n``` |
+
+---
+
+## 📝 自訂裝飾器範例
+```python
+def log(func):
+    def wrapper(*args, **kwargs):
+        print(f"執行 {func.__name__}")
+        return func(*args, **kwargs)
+    return wrapper
+
+@log
+def say_hello():
+    print("Hello")
+
+say_hello()
+# 輸出：
+# 執行 say_hello
+# Hello
