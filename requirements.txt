@@ -1,0 +1,17 @@
+# 核心依賴
+SQLAlchemy>=2.0.0
+PyMySQL>=1.0.0
+python-dotenv>=1.0.0
+
+# 開發和測試依賴
+pytest>=7.0.0
+pytest-asyncio>=0.21.0
+black>=23.0.0
+flake8>=6.0.0
+mypy>=1.0.0
+
+# 可選依賴（根據需要安裝）
+# FastAPI>=0.100.0
+# uvicorn>=0.20.0
+# redis>=4.5.0
+# celery>=5.3.0

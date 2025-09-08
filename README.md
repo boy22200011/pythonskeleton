@@ -1,5 +1,220 @@
-# pythonskeleton
-python 基礎骨架
+# Python 後端服務骨架
+
+一個完整的 Python 後端服務骨架，包含配置管理、資料庫操作、日誌系統、服務層架構和常用裝飾器。
+
+## 🚀 功能特色
+
+- **配置管理**: 支援多環境配置 (dev/test/prod)
+- **資料庫整合**: SQLAlchemy ORM 與 MySQL 支援
+- **日誌系統**: 彩色日誌、檔案輸出、不同環境配置
+- **服務層架構**: 分層架構設計，支援依賴注入
+- **裝飾器工具**: 重試、計時、驗證、資料庫操作等裝飾器
+- **優雅關閉**: 信號處理和資源清理
+- **型別提示**: 完整的型別註解支援
+
+## 📁 專案結構
+
+```
+pythonskeleton/
+├── config.py                 # 配置管理
+├── logger.py                 # 日誌系統
+├── main.py                   # 主程式入口
+├── requirements.txt          # 依賴套件
+├── decorators/               # 裝飾器模組
+│   ├── __init__.py
+│   ├── retry.py             # 重試裝飾器
+│   ├── timing.py            # 計時裝飾器
+│   ├── logging.py           # 日誌裝飾器
+│   ├── validation.py        # 驗證裝飾器
+│   └── database.py          # 資料庫裝飾器
+├── repositories/             # 資料存取層
+│   ├── initMySql.py         # 資料庫初始化
+│   └── models/              # 資料模型
+│       ├── __init__.py
+│       ├── base.py          # 基礎模型
+│       └── user.py          # 使用者模型
+├── services/                 # 服務層
+│   ├── __init__.py          # 服務模組初始化
+│   ├── base.py              # 基礎服務類別
+│   ├── user_service.py      # 使用者服務
+│   ├── main_service.py      # 主要服務
+│   └── notification_service.py # 通知服務
+└── utils/                    # 工具模組
+    └── helper.py            # 輔助函數
+```
+
+## 🛠️ 安裝與使用
+
+### 1. 安裝依賴
+
+```bash
+pip install -r requirements.txt
+```
+
+### 2. 環境配置
+
+建立 `.env` 檔案：
+
+```env
+# 應用程式環境設定
+APP_ENV=dev
+
+# 資料庫設定
+DB_USER=root
+DB_PASSWORD=your_password
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_NAME=your_database
+
+# 日誌設定
+LOG_LEVEL=INFO
+
+# 效能設定
+MAX_WORKERS=4
+```
+
+### 3. 執行應用程式
+
+```bash
+# 開發環境
+python main.py
+
+# 生產環境
+python main.py --env prod
+
+# 測試環境
+python main.py --env test
+```
+
+## 🔧 主要模組說明
+
+### 配置管理 (config.py)
+- 支援多環境配置
+- 自動載入 `.env` 檔案
+- 配置驗證和錯誤處理
+- 型別安全的配置物件
+
+### 日誌系統 (logger.py)
+- 彩色控制台輸出
+- 檔案日誌記錄
+- 不同環境的日誌配置
+- 可自訂的日誌格式
+
+### 資料庫層 (repositories/)
+- SQLAlchemy ORM 整合
+- 連線池管理
+- 自動會話管理
+- 基礎模型類別
+
+### 服務層 (services/)
+- **分層架構設計**: 每個服務類別獨立檔案，便於維護
+- **基礎服務類別**: 提供共同功能和介面
+- **使用者服務**: 處理使用者相關業務邏輯
+- **主要服務**: 協調各個子服務的運作
+- **通知服務**: 處理各種通知功能
+- **依賴注入支援**: 服務間鬆耦合設計
+- **錯誤處理和日誌記錄**: 統一的錯誤處理機制
+
+### 裝飾器工具 (decorators/)
+- **重試裝飾器**: 自動重試失敗的操作
+- **計時裝飾器**: 測量函數執行時間
+- **日誌裝飾器**: 自動記錄函數執行
+- **驗證裝飾器**: 參數和返回值驗證
+- **資料庫裝飾器**: 自動會話管理
+
+## 📝 使用範例
+
+### 基本服務使用
+
+```python
+from config import load_config
+from services import MainService, UserService, NotificationService
+
+# 載入配置
+config = load_config()
+
+# 建立主要服務
+main_service = MainService(config)
+main_service.initialize()
+
+# 執行服務
+main_service.run()
+
+# 取得子服務
+user_service = main_service.get_user_service()
+notification_service = main_service.get_notification_service()
+
+# 清理資源
+main_service.cleanup()
+```
+
+### 使用特定服務
+
+```python
+from services import UserService, NotificationService
+
+# 直接使用使用者服務
+user_service = UserService(config)
+user_service.initialize()
+
+# 建立使用者
+user = user_service.create_user(
+    session, 
+    username="testuser", 
+    email="test@example.com", 
+    password_hash="hashed_password"
+)
+
+# 使用通知服務
+notification_service = NotificationService(config)
+notification_service.initialize()
+
+# 發送通知
+notification_service.send_email_notification(
+    to_email="user@example.com",
+    subject="歡迎註冊",
+    content="歡迎使用我們的服務！"
+)
+```
+
+### 使用裝飾器
+
+```python
+from decorators import retry, timing, log_execution
+
+@retry(max_attempts=3, delay=1.0)
+@timing()
+@log_execution()
+def my_function():
+    # 您的業務邏輯
+    pass
+```
+
+### 資料庫操作
+
+```python
+from repositories.initMySql import get_db_session
+from repositories.models import User
+
+with get_db_session() as session:
+    user = User.get_by_id(session, 1)
+    print(user.username)
+```
+
+## 🎯 最佳實踐
+
+1. **配置管理**: 使用環境變數和 `.env` 檔案管理敏感資訊
+2. **錯誤處理**: 適當的例外處理和日誌記錄
+3. **資源管理**: 使用上下文管理器確保資源正確釋放
+4. **型別提示**: 為所有函數和類別添加型別註解
+5. **測試**: 為關鍵功能編寫單元測試
+6. **日誌記錄**: 適當的日誌等級和詳細的錯誤資訊
+
+## 🔄 版本資訊
+
+- **版本**: v1.0.0
+- **Python**: 3.8+
+- **主要依賴**: SQLAlchemy 2.0+, PyMySQL, python-dotenv
 
 
 # 📦 Python 常用套件整理
